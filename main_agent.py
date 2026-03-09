@@ -1,8 +1,9 @@
 import os
+import json
 import requests
 from dotenv import load_dotenv
 
-from tools import email_operations
+from tools import message_operations
 
 url = "https://ark.cn-beijing.volces.com/api/v3/chat/completions"
 
@@ -13,10 +14,10 @@ headers = {'Authorization': model_token, 'Content-Type': 'application/json'}
 tool_declaration = {
     "type": "function",
     "function": {
-        "name": "get_email_address_by_username",
-        "description": "get the email address of the username",
+        "name": "send_seatalk_message",
+        "description": "send a message via SeaTalk webhook",
         "parameters": {"type": "object",
-                       "properties": {"username": {"type": "string", "description": "the username of the user"}}}
+                       "properties": {"content": {"type": "string", "description": "the message content to send"}}}
     }
 }
 
@@ -37,9 +38,10 @@ while True:
 
     # step 2: call the function if the LLM requests it
     tool_calls, tool_response = None, ""
-    if "get_email_address_by_username" in response.text:
+    if "send_seatalk_message" in response.text:
         tool_calls = response.json()["choices"][0]["message"]["tool_calls"]
-        tool_response = email_operations.get_email_address_by_username("yaohua.li")
+        tool_args = json.loads(tool_calls[0]["function"]["arguments"])
+        tool_response = message_operations.send_seatalk_message(tool_args["content"])
         print(f"<<< tool_response: {tool_response}")
 
         # step 3: return the function response to the LLM

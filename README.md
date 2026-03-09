@@ -6,8 +6,7 @@
 
 ### 当前可用工具
 
-- **按用户名查邮箱**：根据用户名返回对应邮箱地址（格式：`{username}@shopee.com`）
-- **发送邮件**：向指定收件人发送邮件正文（模拟实现）
+- **发送 SeaTalk 消息**：通过 SeaTalk webhook 发送消息到指定群组
 
 ### 扩展能力
 
@@ -69,8 +68,10 @@ my_mcp/
 ├── main_mcp.py          # MCP 服务入口，注册工具
 ├── main_agent.py        # 代理客户端示例，与外部 API 交互
 ├── tools/
-│   └── email_operations.py   # 邮箱操作工具实现
+│   ├── __init__.py      # 工具包初始化文件
+│   └── message_operations.py   # SeaTalk 消息操作工具实现
 ├── .env                 # 环境变量配置文件
+├── .env.example         # 环境变量示例文件
 ├── .gitignore
 ├── requirements.txt     # Python 依赖
 └── README.md
@@ -80,8 +81,7 @@ my_mcp/
 
 | 工具名称 | 功能描述 | 参数 | 返回值 |
 |----------|----------|------|--------|
-| `get_email_address_by_username` | 根据用户名返回邮箱地址 | `username: str` | 邮箱地址字符串 |
-| `send_email` | 向指定邮箱发送邮件 | `recipient_email: str`, `body: str` | 发送状态和消息 |
+| `send_seatalk_message` | 通过 SeaTalk webhook 发送消息 | `content: str` | 发送状态和消息 |
 
 ### 在 MCP 客户端中使用
 
@@ -91,7 +91,7 @@ my_mcp/
 
 `main_agent.py` 是一个代理客户端示例，演示了如何：
 1. 接收用户输入
-2. 调用外部 AI API 生成响应
+2. 调用外部 AI API（使用 DeepSeek API）生成响应
 3. 处理模型的工具调用请求
 4. 执行相应的工具函数
 5. 将工具执行结果返回给模型
@@ -124,6 +124,7 @@ mcp.add_tool(new_tool.my_new_tool)
 - **MCP 连接问题**：确保 MCP 服务正在运行，且客户端配置正确
 - **依赖安装失败**：检查 Python 版本和网络连接
 - **工具调用失败**：检查工具函数的参数和返回值格式
+- **SeaTalk 消息发送失败**：检查 webhook URL 是否正确，以及网络连接是否正常
 
 ## 贡献
 
